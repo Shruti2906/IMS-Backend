@@ -1,10 +1,20 @@
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
+require('dotenv').config();
 
-const authRoutes = require("./api/routes/auth.js");
+//const authRoutes = require("./api/routes/auth.js");
+const authRoutes = require("./apis/auth.js");
 
-mongoose.connect('');
+mongoose.connect(`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASS}@cluster0.2642enq.mongodb.net/LINKCODE?retryWrites=true&w=majority`, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => console.log('Connected to MongoDB!'))
+  .catch((err) => console.error('Error connecting to MongoDB:', err));
+
+console.log("server");
+
 
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
