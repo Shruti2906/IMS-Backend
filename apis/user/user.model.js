@@ -9,4 +9,14 @@ const Schema = mongoose.Schema({
     pass: { type: String, required: true },
 });
 
+// Schema.methods.comparePassword = function (password, callback) {
+//     bcrypt.compare(password, this.password, (error, isMatch) => {
+//       if (error) {
+//         return callback(error);
+//       }
+//       callback(null, isMatch);
+//     });
+//   };
+  
+
 module.exports = mongoose.model('User', Schema);

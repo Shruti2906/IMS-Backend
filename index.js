@@ -2,6 +2,9 @@ const express = require('express')
 const app = express()
 const port = 3000
 
+//const authRoutes = require("./apis/auth.js");
+const userRoutes = require('./apis/auth.js');
+
 //setup env settings
 require('dotenv').config();
 
@@ -13,7 +16,10 @@ app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
+//
 
+app.use(express.json());
+app.use('/apis/users', userRoutes);
 
 
 
