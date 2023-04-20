@@ -1,8 +1,22 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
+const { body, validationResult } = require('express-validator');
 const User = require("./user.model");
 
 exports.register = async (req, res, next) => {
+
+  console.log(req.body.email)
+  console.log(req.body.password)
+  // Add validation rules using express-validator
+  await body('email').isEmail().normalizeEmail().run(req);
+  await body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters long').run(req);
+
+  // Check for validation errors and return 400 response if there are any
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+  
   try {
     // Check if user with given email already exists
     const existingUser = await User.findOne({ email: req.body.email });

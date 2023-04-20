@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const UserController = require('C:/Users/COMPUTER/Documents/IMS/IMS-Backend/apis/user/user.controller.js');
+
+const UserController = require('./user/user.controller');
 
 router.post("/register", UserController.register);
 
