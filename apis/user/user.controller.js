@@ -4,8 +4,14 @@ const { body, validationResult } = require("express-validator");
 const User = require("./user.model");
 
 exports.register = async (req, res, next) => {
-  // Add validation rules using express-validator
-  await body("email").isEmail().normalizeEmail().run(req);
+  //validation rules using express-validator
+
+  const isEmailValid = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+  await body("email").custom(isEmailValid).run(req);
+
   await body("password")
     .isLength({ min: 8 })
     .withMessage("Password must be at least 8 characters long")
@@ -20,6 +26,7 @@ exports.register = async (req, res, next) => {
   try {
     // Check if user with given email already exists
     const existingUser = await User.findOne({ email: req.body.email });
+
     if (existingUser) {
       return res
         .status(400)
@@ -46,7 +53,7 @@ exports.register = async (req, res, next) => {
 
 exports.login = (req, res, next) => {
   const { email, password } = req.body;
-  
+
   User.findOne({ email })
     .then((user) => {
       if (!user) {
@@ -57,7 +64,6 @@ exports.login = (req, res, next) => {
         .compare(password, user.pass)
         .then((isMatch) => {
           if (!isMatch) {
-           
             return res.status(401).json({ message: "Authentication failed" });
           }
           return res.status(200).json({ message: "Login successful" });
