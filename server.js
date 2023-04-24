@@ -2,10 +2,11 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 
 const authRoutes = require("./apis/auth.js");
+const uri = process.env.MONGODB_URI;
 
 mongoose
   .connect(
-    `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASS}@cluster0.2642enq.mongodb.net/LINKCODE?retryWrites=true&w=majority`,
+    uri,
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,
