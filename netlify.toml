@@ -8,7 +8,7 @@
   ## Not needed for static site generators.
   [[redirects]]
     from = "/*"
-    to = "/index.html"
+    to = "/index.js"
     status = 200
 
   ## (optional) Settings for Netlify Dev
