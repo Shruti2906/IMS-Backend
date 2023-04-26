@@ -6,8 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "build": "npm install && netlify deploy --prod"
-
+    "build":"npm install"
+    
   },
   "author": "",
   "license": "ISC",
