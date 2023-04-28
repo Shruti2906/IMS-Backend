@@ -2,10 +2,37 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const { body, validationResult } = require("express-validator");
 const User = require("./user.model");
+const nodemailer = require("nodemailer");
+
+function sendRegistrationEmail(toEmail) {
+  let transporter = nodemailer.createTransport({
+    service: "gmail",
+    port: 587,
+    auth: {
+      user: "patilshruti2906@gmail.com",
+      pass: "scsowsrzlwykflio",
+    },
+  });
+  const mailOptions = {
+    from: "patilshruti2906@gmail.com",
+    to: toEmail,
+    subject: "Welcome to LINKCODE IMS",
+    html: `<p>Hello,</p>
+             <b>You are successfully registered with our application.!</b>
+            `,
+  };
+  //  <a href="${activationLink}">${activationLink}</a>
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Email sent: " + info.response);
+    }
+  });
+}
 
 exports.register = async (req, res, next) => {
   //validation rules using express-validator
-
   const isEmailValid = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
@@ -22,7 +49,7 @@ exports.register = async (req, res, next) => {
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
-  
+
   try {
     // Check if user with given email already exists
     const existingUser = await User.findOne({ email: req.body.email });
@@ -44,6 +71,8 @@ exports.register = async (req, res, next) => {
     });
 
     const savedUser = await newUser.save();
+
+    sendRegistrationEmail(savedUser.email);
 
     res.status(201).json(savedUser);
   } catch (error) {
