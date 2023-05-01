@@ -3,18 +3,23 @@ const bcrypt = require("bcryptjs");
 const { body, validationResult } = require("express-validator");
 const User = require("./user.model");
 const nodemailer = require("nodemailer");
+require("dotenv").config();
+
+const MAIL_HOST = process.env.MAIL_HOST;
+const MAIL_USER = process.env.MAIL_USER;
+const MAIL_PASS = process.env.MAIL_PASS;
 
 function sendRegistrationEmail(toEmail) {
   let transporter = nodemailer.createTransport({
-    service: "gmail",
+    service: MAIL_HOST,
     port: 587,
     auth: {
-      user: "patilshruti2906@gmail.com",
-      pass: "scsowsrzlwykflio",
+      user: MAIL_USER,
+      pass: MAIL_PASS,
     },
   });
   const mailOptions = {
-    from: "patilshruti2906@gmail.com",
+    from: MAIL_USER,
     to: toEmail,
     subject: "Welcome to LINKCODE IMS",
     html: `<p>Hello,</p>
@@ -117,6 +122,7 @@ exports.reset = (req, res, next) => {
 
 exports.changePassword = async (req, res, next) => {
   // todo
+
   res.status(500).json({
     message: "Changed successfully",
   });
