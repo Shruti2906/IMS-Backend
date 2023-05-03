@@ -4,10 +4,14 @@ const { body, validationResult } = require("express-validator");
 const User = require("./user.model");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
+const jwt = require("jsonwebtoken");
 
 const MAIL_HOST = process.env.MAIL_HOST;
 const MAIL_USER = process.env.MAIL_USER;
 const MAIL_PASS = process.env.MAIL_PASS;
+
+//JWT_SECRET will be common secret
+const JWT_SECRET = process.env.JWT_SECRET;
 
 function sendRegistrationEmail(toEmail) {
   let transporter = nodemailer.createTransport({
@@ -27,6 +31,39 @@ function sendRegistrationEmail(toEmail) {
             `,
   };
   //  <a href="${activationLink}">${activationLink}</a>
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Email sent: " + info.response);
+    }
+  });
+}
+
+function sendPasswordResetEmail(toEmail, token) {
+  console.log(toEmail);
+  let transporter = nodemailer.createTransport({
+    service: MAIL_HOST,
+    port: 587,
+    auth: {
+      user: MAIL_USER,
+      pass: MAIL_PASS,
+    },
+  });
+  const mailOptions = {
+    from: MAIL_USER,
+    to: toEmail,
+    subject: "Password Reset Request",
+    html: `<p>Hello,</p>
+    <p>You have requested to reset your password for your LINKCODE IMS account.</p>
+    <p>Please <a href="${`https://localhost:3000/apis/users/resetPassword?token=${token}`}">reset your password</a> here</p>
+    <br>
+    <p>If you did not request a password reset, please ignore this email.</p>
+            `,
+  };
+  //  <a href="${activationLink}">${activationLink}</a>
+  // <p>Please <a href="${`https://ims-frontend-kappa.vercel.app/auth/resetPassword/reset-password?token=${token}`}">reset your password</a> here</p>
+
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
       console.log(error);
@@ -113,11 +150,77 @@ exports.login = (req, res, next) => {
     });
 };
 
-exports.reset = (req, res, next) => {
-  // complete code
-  res.status(201).json({
-    res: "Email Sent",
-  });
+exports.forgotPassword = async (req, res, next) => {
+  const email = req.body.email;
+
+  try {
+    //check if user exist in our db
+    const UserData = await User.findOne({ email });
+
+    if (!UserData) {
+      console.log("!UserData: ", UserData);
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    //user exist and now create one time password link that is vallid for 15 minutes
+
+    //this secret will be unique for each user
+    const secret = JWT_SECRET + UserData.pass;
+    const payload = {
+      email: UserData.email,
+      id: UserData.id,
+    };
+    const token = jwt.sign(payload, secret, { expiresIn: "15m" });
+
+    const data = await User.updateOne(
+      { email: email },
+      { $set: { token: token } }
+    );
+
+    //Send Mail with password reset link
+    sendPasswordResetEmail(UserData.email, token);
+    res
+      .status(200)
+      .json({ success: true, msg: "Password reset link sent to your email." });
+  } catch (error) {
+    res.status(200).json({ success: false, msg: error.message });
+  }
+};
+
+exports.resetPassword = async (req, res, next) => {
+  try {
+    const token = req.query.token; //const token = req.body.token;
+    const password = req.body.password;
+    const tokenData = await User.findOne({ token: token });
+
+    if (!tokenData) {
+      return res
+        .status(200)
+        .send({ success: true, message: "This Link is Expired.!" });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const newPassword = await bcrypt.hash(password, salt);
+
+    const updatedUSer = await User.findByIdAndUpdate(
+      { _id: tokenData._id },
+      { $set: { pass: newPassword, token: "" } },
+      { new: true }
+    );
+
+    console.log("\nupdatesUser: ", updatedUSer._id);
+    console.log("\nupdatesUser: ", updatedUSer.email);
+    console.log("\nupdatesUser: ", updatedUSer.pass);
+    res
+      .status(200)
+      .send({
+        success: true,
+        message: "User Password has been Reset",
+        data: updatedUSer,
+      });
+  } catch (error) {
+    res.status(401).send({ success: false, message: error.message });
+  }
 };
 
 exports.changePassword = async (req, res, next) => {

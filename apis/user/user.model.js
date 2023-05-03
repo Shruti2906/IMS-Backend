@@ -6,7 +6,14 @@ const Schema = mongoose.Schema({
     type: String,
     required: true,
   },
-  pass: { type: String, required: true },
+  pass: {
+    type: String,
+    required: true,
+  },
+  token: {
+    type: String,
+    default: "",
+  },
 });
 
 module.exports = mongoose.model("User", Schema);

@@ -6,7 +6,9 @@ router.post("/register", UserController.register);
 
 router.post('/login',UserController.login);
 
-router.post('/reset',UserController.reset);
+router.post('/forgotPassword',UserController.forgotPassword);
+
+router.post('/resetPassword',UserController.resetPassword);
 
 router.post('/reset/:id',UserController.changePassword);
 
