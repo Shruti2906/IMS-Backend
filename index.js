@@ -23,12 +23,12 @@ require("dotenv").config();
 //require db connection file
 require("./server");
 
-//
-app.get("/", (req, res) => {
-  res.send("Hello World!");
+app.get("/health", (req, res, next) => {
+  return res.status(200).json({
+    message: "Health is good",
+    date: new Date()
+  });
 });
-
-//
 
 app.use(express.json());
 app.use("/apis/users", userRoutes);
