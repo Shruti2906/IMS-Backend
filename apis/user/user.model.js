@@ -10,6 +10,11 @@ const Schema = mongoose.Schema({
     type: String,
     required: true,
   },
+  type: {
+    type: String,
+    enum: ["STUDENT", "INSTRUCTOR", "ADMIN", "SUPERADMIN"],
+    default: "STUDENT",
+  },
   token: {
     type: String,
     default: "",
