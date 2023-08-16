@@ -16,6 +16,7 @@ app.use((req, res, next) => {
 });
 
 const userRoutes = require("./apis/auth.js");
+const courseRoutes = require("./apis/courses/courses.routes.js");
 
 //setup env settings
 require("dotenv").config();
@@ -26,12 +27,13 @@ require("./server");
 app.get("/health", (req, res, next) => {
   return res.status(200).json({
     message: "Health is good",
-    date: new Date()
+    date: new Date(),
   });
 });
 
 app.use(express.json());
 app.use("/apis/users", userRoutes);
+app.use("/apis/courses", courseRoutes);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
