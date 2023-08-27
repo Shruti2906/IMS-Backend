@@ -5,7 +5,16 @@ const Schema = mongoose.Schema({
   name: {
     type: String,
     required: true,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
+  fees: {
+    type: Number,
+    required: true,
   }
+
 });
 
 module.exports = mongoose.model("Course", Schema);

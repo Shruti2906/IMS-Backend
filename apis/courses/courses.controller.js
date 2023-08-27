@@ -15,6 +15,8 @@ exports.addCourse = async (req, res, next) => {
     const course = new courses({
       _id: new mongoose.Types.ObjectId(),
       name: req.body.name,
+      description : req.body.description,
+      fees : req.body.fees,
     });
 
     const newCourse = await course.save();
