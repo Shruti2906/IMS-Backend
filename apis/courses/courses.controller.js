@@ -3,7 +3,7 @@ const courses = require("./courses.model");
 
 exports.getCourses = async (req, res, next) => {
   try {
-    const allCourses = await courses.find({});
+    const allCourses = await courses.find({}).limit(100);
     res.send({ status: 200, data: allCourses });
   } catch (err) {
     res.status(400).json({ message: err.message });
