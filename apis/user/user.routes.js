@@ -12,4 +12,7 @@ router.post('/resetPassword',UserController.resetPassword);
 
 router.post('/reset/:id',UserController.changePassword);
 
+router.post('/addEnquiry',UserController.addEnquiry);
+
+
 module.exports = router;

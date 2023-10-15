@@ -1,33 +1,30 @@
 const mongoose  = require('mongoose');
 
 const Schema = mongoose.Schema({
-    fullName: {
+    firstname: {
         type: 'string',
         required: true
     },
-    phoneNumber: {
-        type: Number,
-         required: true
-    },
-    altPhoneNumber:{
-        type: Number,
-         required: true
+    lastname: {
+        type: 'string',
+        required: true
     },
     email: {
         type: String,
          required: true
     },
+    mobno: {
+        type: Number,
+         required: true
+    },
     education: {
         type: String,
-         required: true
     },
     collegeName: {
         type: String,
-         required: true
     },
     courseEnrolledIn: {
         type: Array,
-        required: true
     },
     contactMessage: {
         type: String,

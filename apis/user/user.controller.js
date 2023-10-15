@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const { body, validationResult } = require("express-validator");
 const User = require("./user.model");
+const Enquiry = require("./enquiry.model");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
@@ -123,6 +124,7 @@ exports.register = async (req, res, next) => {
 };
 
 exports.login = (req, res, next) => {
+  
   const { email, password } = req.body;
 
   User.findOne({ email })
@@ -241,3 +243,20 @@ exports.changePassword = async (req, res, next) => {
     message: "Changed successfully",
   });
 };
+
+// Create an enquiry
+exports.addEnquiry = async (req, res, next) => {
+  console.log('add eq ');
+  try {
+    const { firstname, lastname,  email, mobno, message } = req.body;
+    console.log('req body : ',req.body);
+
+    const enquiry = new Enquiry({ firstname, lastname, email, mobno, contactMessage:message });
+    await enquiry.save();
+    res.status(201).json({ message: 'Enquiry added successfully' });
+  } catch (error) {
+    console.error('Error on Enquiry:', error);
+    res.status(500).json({ error: 'An error occurred while processing your inquiry' });
+  }
+};
+
